@@ -12,7 +12,10 @@ dotenv.config();
 const app = express();
 const httpServer = http.Server(app);
 
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://scents-by-jojo-frontend.vercel.app",
+];
 
 const corsOptions = {
   origin: function (origin, callback) {
