@@ -24,5 +24,5 @@ router.put(
   createProduct
 );
 router.get("/all-products", getAllProducts);
-router.delete("/delete/:id", deleteProduct);
+router.delete("/delete/:id", authenticate, authorizeAdmin, deleteProduct);
 export default router;
