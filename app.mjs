@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 //routes
 import authRoute from "./routes/auth.mjs";
 import productsRoute from "./routes/products.mjs";
+import paymentRoute from "./routes/payment.mjs";
+import orderRoute from "./routes/order.mjs";
 
 dotenv.config();
 const app = express();
@@ -40,6 +42,8 @@ connectDB();
 
 app.use("/api/", authRoute);
 app.use("/api/products/", productsRoute);
+app.use("/api/payment/", paymentRoute);
+app.use("/api/orders/", orderRoute);
 
 app.use((req, res, next) => {
   res.status(404).json({
