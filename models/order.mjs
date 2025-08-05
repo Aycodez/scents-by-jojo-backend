@@ -27,6 +27,11 @@ const shippingSchema = new Schema({
   estimatedDelivery: { type: String },
 });
 
+const bankAccountSchema = new Schema({
+  bankName: { type: String, default: "" },
+  accountNumber: { type: String, default: "" },
+});
+
 const orderSchema = new Schema(
   {
     // user: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -43,10 +48,18 @@ const orderSchema = new Schema(
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },
+    bankAccount: bankAccountSchema,
     status: {
       type: String,
-      enum: ["order-placed", "processing", "shipped", "delivered", "cancelled"],
-      default: "order-placed",
+      enum: [
+        "Pending",
+        "Order Placed",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancelled",
+      ],
+      default: "Order Placed",
     },
     orderNumber: { type: String, unique: true },
   },

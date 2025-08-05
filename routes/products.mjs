@@ -4,6 +4,7 @@ import {
   createProduct,
   deleteProduct,
   getAllProducts,
+  updateProduct,
 } from "../controllers/productsController.mjs";
 import { authenticate, authorizeAdmin } from "../middlewares/index.mjs";
 
@@ -21,7 +22,7 @@ router.put(
   upload.array("images", 2),
   authenticate,
   authorizeAdmin,
-  createProduct
+  updateProduct
 );
 router.get("/all-products", getAllProducts);
 router.delete("/delete/:id", authenticate, authorizeAdmin, deleteProduct);

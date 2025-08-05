@@ -9,28 +9,37 @@ router.post("/initialize", async (req, res) => {
   const { email, amount, method, orderDetails } = req.body;
 
   try {
-    const response = await axios.post(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        email,
-        amount: amount * 100, // Paystack expects amount in kobo
-        channels: method === "bank" ? ["bank_transfer"] : ["card"],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+    if (method === "card") {
+      const response = await axios.post(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          email,
+          amount: amount * 100, // Paystack expects amount in kobo
+          channels: ["card"],
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      delete orderDetails.bankAccount;
+      const newOrder = new Order({
+        ...orderDetails,
+        referenceId: response.data.data.reference,
+      });
+      await newOrder.save();
 
-    const newOrder = new Order({
-      ...orderDetails,
-      referenceId: response.data.data.reference,
-    });
-    await newOrder.save();
-
-    res.json({ success: true, data: response.data.data });
+      res.json({ success: true, data: response.data.data });
+    } else {
+      const newOrder = new Order({
+        ...orderDetails,
+        status: "Pending",
+      });
+      await newOrder.save();
+      res.json({ success: true, data: { orderId: newOrder.orderNumber } });
+    }
   } catch (err) {
     console.error(err.response?.data || err.message);
     res.status(500).json({ success: false, message: "Payment init failed" });
@@ -54,7 +63,6 @@ router.get("/verify/:reference", async (req, res) => {
       { referenceId: reference },
       { isPaid: true }
     );
-    console.log(response.data);
     if (!order)
       res.status(404).json({ success: false, message: "Order not found" });
 
