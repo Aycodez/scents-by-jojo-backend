@@ -1,6 +1,9 @@
 import express from "express";
 import axios from "axios";
 import Order from "../models/order.mjs";
+import { sendEmail } from "../utils/email.mjs";
+import { EMAIL_TEMPLATE } from "../constants/index.mjs";
+import { formatDate } from "../utils/index.mjs";
 
 const router = express.Router();
 
@@ -59,19 +62,54 @@ router.get("/verify/:reference", async (req, res) => {
         },
       }
     );
-    const order = await Order.findOneAndUpdate(
-      { referenceId: reference },
-      { isPaid: true }
-    );
-    if (!order)
-      res.status(404).json({ success: false, message: "Order not found" });
+    const order = await Order.findOne({ referenceId: reference });
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+    if (order.isPaid)
+      return res
+        .status(400)
+        .json({ success: false, message: "Order has been paid" });
 
-    // console.log(order);
+    order.isPaid = true;
+    await order.save();
+    const itemsHtml = order.orderItems
+      .map(
+        (item) => `
+  <tr>
+    <td>${item.name}</td>
+    <td align="center">${item.quantity}</td>
+    <td align="right">₦${item.price}</td>
+  </tr>
+`
+      )
+      .join("");
+    const htmlContent = EMAIL_TEMPLATE.replace(
+      "{{customerName}}",
+      order.shipping.fullName
+    )
+      .replace("{{orderId}}", order.orderNumber)
+      .replace("{{orderDate}}", formatDate(order.createdAt))
+      .replace("{{trackingNumber}}", order.orderNumber)
+      .replace("{{shippingAddress}}", order.shipping.address)
+      .replace("{{deliveryDate}}", order.shipping.estimatedDelivery)
+      .replace("{{items}}", itemsHtml)
+      .replace("{{currentYear}}", new Date().getFullYear().toString());
+
+    await sendEmail({
+      to: order.email,
+      subject: "Order Confirmation",
+      html: htmlContent,
+      customerName: order.shipping.fullName,
+    });
     res.json({
       success: true,
       data: { orderId: order.orderNumber, fullName: order.shipping.fullName },
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ success: false, message: "Verification failed" });
   }
 });
