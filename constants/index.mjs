@@ -58,7 +58,7 @@ export const EMAIL_TEMPLATE = `<!DOCTYPE html>
 
       <p>Hi <strong>{{customerName}}</strong>,</p>
 
-      <p>Your order <strong>#{{orderId}}</strong> placed on <strong>{{orderDate}}</strong> has been successfully processed.</p>
+      <p>Your order <strong>{{orderId}}</strong> placed on <strong>{{orderDate}}</strong> has been successfully processed.</p>
 
        <h3>Items Ordered:</h3>
       <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse: collapse;">
@@ -75,11 +75,11 @@ export const EMAIL_TEMPLATE = `<!DOCTYPE html>
       </table>
 
       <div class="tracking">
-        TRACKING NUMBER: {{trackingNumber}}
+        ORDER ID: {{trackingNumber}}
       </div>
 
       <div class="details">
-        <p><strong>Shipping Address:</strong> {{shippingAddress}}</p>
+        <p><strong>Shipping Address:</strong> {{shippingAddress}},{{city}},{{state}}</p>
         <p><strong>Estimated Delivery:</strong> {{deliveryDate}}</p>
       </div>
 

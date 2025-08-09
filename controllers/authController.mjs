@@ -36,7 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, securityKey } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -44,8 +44,8 @@ const loginUser = asyncHandler(async (req, res) => {
         password,
         existingUser.password
       );
-
-      if (isPasswordValid) {
+      const isSecurityKeyValid = securityKey === process.env.SECURITY_KEY;
+      if (isPasswordValid && isSecurityKeyValid) {
         const token = generateToken(res, existingUser._id);
         res.status(200).json({
           _id: existingUser._id,
@@ -55,7 +55,7 @@ const loginUser = asyncHandler(async (req, res) => {
           token,
         });
       } else {
-        res.status(401).json({ message: "Invalid Password" });
+        res.status(401).json({ message: "Invalid Password or security key" });
       }
     } else {
       res.status(401).json({ message: "User not found" });

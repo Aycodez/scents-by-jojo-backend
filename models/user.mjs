@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
+import { customAlphabet } from "nanoid";
 
+const generateSecurityKey = customAlphabet(
+  "1459ABCFGHJ&*+KLMNPQ@RS£/.'=+WXYZ~#",
+  15
+);
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -23,6 +28,9 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please provide a password"],
       minLength: [6, "Password must be at least 6 characters"],
     },
+    securityKey: {
+      type: String,
+    },
 
     isActive: {
       type: Boolean,
@@ -38,22 +46,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// userSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) {
-//     return next();
-//   }
-
-//   try {
-//     this.password = await bcrypt.hash(this.password, 12);
-//     next();
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// userSchema.methods.comparePassword = async function (candidate) {
-//   return await bcrypt.compare(candidate, this.password);
-// };
+userSchema.pre("save", function (next) {
+  if (this.isNew) {
+    this.securityKey = generateSecurityKey();
+  }
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 export default User;

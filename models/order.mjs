@@ -20,9 +20,9 @@ const orderItemSchema = new Schema({
 const shippingSchema = new Schema({
   fullName: { type: String, required: true },
   address: { type: String, required: true },
-  //   city: { type: String, required: true },
-  //   postalCode: { type: String, required: true },
-  //   country: { type: String, required: true },
+  city: { type: String, required: true },
+  postalCode: { type: String },
+  state: { type: String, required: true },
   phoneNumber: { type: String, required: true },
   estimatedDelivery: { type: String },
 });

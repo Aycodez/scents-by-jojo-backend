@@ -95,6 +95,8 @@ router.get("/verify/:reference", async (req, res) => {
       .replace("{{trackingNumber}}", order.orderNumber)
       .replace("{{shippingAddress}}", order.shipping.address)
       .replace("{{deliveryDate}}", order.shipping.estimatedDelivery)
+      .replace("{{city}}", order.shipping.city)
+      .replace("{{state}}", order.shipping.state)
       .replace("{{items}}", itemsHtml)
       .replace("{{currentYear}}", new Date().getFullYear().toString());
 
