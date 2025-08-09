@@ -16,7 +16,7 @@ const httpServer = http.Server(app);
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://localhost:3001",
+  "https://scentsbyjojo.com",
   "https://scents-by-jojo-frontend.vercel.app",
 ];
 
