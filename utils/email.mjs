@@ -27,11 +27,10 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async ({ to, customerName, subject, html }) => {
   try {
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_SERVICE_USER,
+      from: `Scents By Jojo <${process.env.EMAIL_SERVICE_USER}>`,
       to,
       subject,
       html,
-      text: `Hi ${customerName}, your order has been confirmed.`,
     });
     console.log("Email sent:", info.messageId);
     console.log(info);
