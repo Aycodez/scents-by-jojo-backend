@@ -29,7 +29,6 @@ export const updateProduct = async (req, res) => {
     const updatedFields = req.body;
     const existingImage = product.images?.[0];
     const newFile = req.files?.[0];
-
     // If a new image was uploaded
     if (newFile) {
       const newImageUrl = newFile.path;
@@ -48,6 +47,8 @@ export const updateProduct = async (req, res) => {
           },
         ];
       }
+    } else {
+      updatedFields.images = product.images;
     }
 
     // Update other fields
